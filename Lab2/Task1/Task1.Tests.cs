@@ -10,29 +10,29 @@ public class FactoriesTests
     [Fact]
     public void ManagerCall()
     {
-        ISubscriptionFactory factory = new ManagerCall();
-        Assert.IsType<PremiumSubscription>(CreateSubscription(factory, "UA", 12, null));
-        Assert.IsType<DomesticSubscription>(CreateSubscription(factory, "US", 12, "IPZ231"));
+        IFactory factory = new ManagerCall();
+        Assert.Equal("Premium", CreateSubscription(factory, "UA", 12, null).Name);
+        Assert.Equal("Domestic", CreateSubscription(factory, "US", 12, "IPZ231").Name);
     }
 
     [Fact]
     public void MobileApp()
     {
-        ISubscriptionFactory factory = new MobileApp();
-        Assert.IsType<PremiumSubscription>(CreateSubscription(factory, "US", 12, null));
-        Assert.IsType<EducationalSubscription>(CreateSubscription(factory, "UA", 12, "IPZ231"));
+        IFactory factory = new MobileApp();
+        Assert.Equal("Premium", CreateSubscription(factory, "US", 12, null).Name);
+        Assert.Equal("Educational", CreateSubscription(factory, "UA", 12, "IPZ231").Name);
     }
 
     [Fact]
     public void WebSite()
     {
-        ISubscriptionFactory factory = new WebSite();
-        Assert.IsType<PremiumSubscription>(CreateSubscription(factory, "UA", 12, null));
-        Assert.IsType<EducationalSubscription>(CreateSubscription(factory, "UA", 12, "IPZ231"));
-        Assert.IsType<DomesticSubscription>(CreateSubscription(factory, "US", 12, "IPZ231"));
+        IFactory factory = new WebSite();
+        Assert.Equal("Premium", CreateSubscription(factory, "UA", 12, null).Name);
+        Assert.Equal("Educational", CreateSubscription(factory, "UA", 12, "IPZ231").Name);
+        Assert.Equal("Domestic", CreateSubscription(factory, "US", 12, "IPZ231").Name);
     }
 
-    public ISubscription CreateSubscription(ISubscriptionFactory factory, string country, int months, string? studentId)
+    public ISubscription CreateSubscription(IFactory factory, string country, int months, string? studentId)
     {
         return factory.CreateSubscription(country, months, studentId);
     }
