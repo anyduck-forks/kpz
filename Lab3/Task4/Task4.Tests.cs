@@ -3,19 +3,38 @@ using Xunit;
 
 namespace Lab3.Task4.Tests;
 
-
-public class ProxiesTests
+public class ProxiesTests : IDisposable
 {
+    private DirectoryInfo TempDir;
+
+    public ProxiesTests()
+    {
+        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        TempDir = Directory.CreateDirectory(dir);
+        
+        var helloPath = Path.Combine(TempDir.FullName, "hello.txt");
+        File.WriteAllText(helloPath, "Hello\nWorld");
+
+        var blockPath = Path.Combine(TempDir.FullName, "secret.txt");
+        File.WriteAllText(blockPath, "This is a secret.");
+        
+        var allowPath = Path.Combine(TempDir.FullName, "benine.txt");
+        File.WriteAllText(allowPath, "Regular text.");
+    }
+
+    public void Dispose()
+    {
+        TempDir.Delete(true);
+    }
+
     [Fact]
     public void SmartTextCheckerTest()
     {
-        string path = Path.GetTempFileName();
-        File.WriteAllText(path, "Hello\nWorld");
-
+        var writer = new StringWriter();
         ISmartTextReader _reader = new SmartTextReader();
-        var output = new StringWriter();
-        ISmartTextReader reader = new SmartTextChecker(_reader, output);
+        ISmartTextReader reader = new SmartTextChecker(_reader, writer);
 
+        string path = Path.Combine(TempDir.FullName, "hello.txt");
         char[][] text = reader.ReadText(path);
         Assert.Equal(2, text.Length);
         Assert.Equal("Hello", new string(text[0]));
@@ -28,27 +47,21 @@ public class ProxiesTests
             "Closing file: " + path,
             ""
         };
-        Assert.Equal(expectedOutput, output.GetStringBuilder().ToString().Split(Environment.NewLine));
+        Assert.Equal(expectedOutput, writer.GetStringBuilder().ToString().Split(Environment.NewLine));
     }
 
     [Fact]
     public void SmartTextReaderLocker()
     {
-        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        Directory.CreateDirectory(dir);
         ISmartTextReader _reader = new SmartTextReader();
         ISmartTextReader reader = new SmartTextReaderLocker(_reader, [new Regex("secret.*")]);
 
-        var blockPath = Path.Combine(dir, "secret.txt");
-        File.WriteAllText(blockPath, "This is a secret.");
-
+        var blockPath = Path.Combine(TempDir.FullName, "secret.txt");
         char[][] text1 = reader.ReadText(blockPath);
         Assert.Empty(text1);
 
-        var allowPath = Path.Combine(dir, "benine.txt");
-        File.WriteAllText(allowPath, "This is a not secret.");
-
+        var allowPath = Path.Combine(TempDir.FullName, "benine.txt");
         char[][] text2 = reader.ReadText(allowPath);
-        Assert.Equal("This is a not secret.", new string(text2[0]));
+        Assert.Equal("Regular text.", new string(text2[0]));
     }
 }
