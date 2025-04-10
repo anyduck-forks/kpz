@@ -52,4 +52,9 @@ public class LightElementNode : LightNode
     }
 
     public int ChildCount => Children.Count;
+
+    public void AddChild(LightNode child)
+    {
+        Children.Add(child);
+    }
 }
