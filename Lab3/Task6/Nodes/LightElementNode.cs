@@ -1,45 +1,16 @@
 namespace Lab3.Task6.Nodes;
 
-public enum DisplayType
-{
-    Block,
-    Inline,
-    InlineBlock,
-    Flex,
-    Grid,
-    None
-}
-public enum ClosingType
-{
-    Single,
-    Double
-}
-
 
 public class LightElementNode : LightNode
 {
-    public string TagName { get; set; }
-    public DisplayType ElementDisplayType { get; set; } = DisplayType.Block;
-    public ClosingType ElementClosingType { get; set; } = ClosingType.Double;
-    public string FontFamily { get; set; } = "Arial";
-    public int FontSize { get; set; } = 16;
-    public int FontWeight { get; set; } = 400;
-    public int PaddingLeft { get; set; } = 0;
-    public int PaddingRight { get; set; } = 0;
-    public int PaddingTop { get; set; } = 0;
-    public int PaddingBottom { get; set; } = 0;
-    public int MarginLeft { get; set; } = 0;
-    public int MarginRight { get; set; } = 0;
-    public int MarginTop { get; set; } = 0;
-    public int MarginBottom { get; set; } = 0;
+
+    public ElementType ElementType { get; set; }
     public Dictionary<string, string> Attributes { get; set; } = new();
     public List<LightNode> Children { get; set; } = new List<LightNode>();
 
-    public LightElementNode(string tagName, DisplayType displayType, ClosingType closingType)
+    public LightElementNode(ElementType elementType)
     {
-        TagName = tagName;
-        ElementDisplayType = displayType;
-        ElementClosingType = closingType;
+        ElementType = elementType;
     }
 
     public override string OuterHTML
@@ -52,8 +23,8 @@ public class LightElementNode : LightNode
                 var attributeList = Attributes.Select(attr => $"{attr.Key}=\"{attr.Value}\"");
                 attributes = " " + string.Join(" ", attributeList);
             }
-            string openingTag = $"<{TagName}{attributes}>";
-            string closingTag = ElementClosingType == ClosingType.Double ? $"</{TagName}>" : "";
+            string openingTag = $"<{ElementType.TagName}{attributes}>";
+            string closingTag = ElementType.ClosingType == ClosingType.Double ? $"</{ElementType.TagName}>" : "";
             return openingTag + InnerHTML + closingTag;
         }
     }
@@ -64,4 +35,8 @@ public class LightElementNode : LightNode
     }
 
     public int ChildCount => Children.Count;
+    public void AddChild(LightNode child)
+    {
+        Children.Add(child);
+    }
 }

@@ -1,9 +1,14 @@
 // dotnet test --filter Lab3.Task6 --logger="console;verbosity=detailed"
+//
+// This LightHTML language is supposed to be similar to Markdown
+// so the style are defined by the text itself and not by css
+// therefore font properties and layout are extrinsic to the tag
+//
+// 4000 Kbytes before Flyweight
+// 2336 Kbytes after Flyweight
 
-using Lab3.Task6;
 using Lab3.Task6.Nodes;
 using System.Diagnostics;
-using System.Text;
 using Xunit;
 using Xunit.Abstractions;
 
