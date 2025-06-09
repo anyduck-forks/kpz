@@ -1,3 +1,4 @@
+using Lab3.Task5.Commands;
 using Lab3.Task5.Nodes;
 using Xunit;
 
@@ -34,6 +35,61 @@ public class LightHTMLTests
 
         var expectedOutput = new[] { "ul", "li", "Item 1", "li", "Item 2", "ul", "Item 3", "li", "img" };
         Assert.Equal(expectedOutput, traversedOutput);
+    }
+
+    [Fact]
+    public void AddChildCommand()
+    {
+        var parent = new LightElementNode("div");
+        var child = new LightTextNode("Hello");
+        var command = new AddChildCommand(parent, child);
+
+        command.Execute();
+        Assert.Single(parent.Children);
+        Assert.Same(child, parent.Children[0]);
+
+        command.Undo();
+        Assert.Empty(parent.Children);
+    }
+
+    [Fact]
+    public void SetAttributeCommand()
+    {
+        var node = new LightElementNode("img");
+        var command = new SetAttributeCommand(node, "src", "img.png");
+
+        command.Execute();
+        Assert.Equal("img.png", node.Attributes["src"]);
+
+        command.Undo();
+        Assert.False(node.Attributes.ContainsKey("src"));
+    }
+
+    [Fact]
+    public void CommandManager()
+    {
+        var invoker = new CommandManager();
+        var parent = new LightElementNode("div");
+        var child1 = new LightTextNode("First");
+        var child2 = new LightTextNode("Second");
+
+        var command1 = new AddChildCommand(parent, child1);
+        var command2 = new AddChildCommand(parent, child2);
+
+
+        invoker.Execute(command1);
+        invoker.Execute(command2);
+        Assert.Equal(2, parent.Children.Count);
+        Assert.Same(child1, parent.Children[0]);
+        Assert.Same(child2, parent.Children[1]);
+
+
+        invoker.UndoLast();
+        Assert.Single(parent.Children);
+        Assert.Same(child1, parent.Children[0]);
+
+        invoker.UndoLast();
+        Assert.Empty(parent.Children);
     }
 
     private LightElementNode CreateSampleHTML()
