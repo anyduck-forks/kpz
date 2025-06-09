@@ -1,3 +1,5 @@
+using Lab3.Task5.Visitors;
+
 namespace Lab3.Task5.Nodes;
 
 public enum DisplayType
@@ -30,27 +32,7 @@ public class LightElementNode : LightNode
         ElementClosingType = closingType;
     }
 
-    public override string OuterHTML
-    {
-        get
-        {
-            string attributes = "";
-            if (Attributes.Count() > 0)
-            {
-                var attributeList = Attributes.Select(attr => $"{attr.Key}=\"{attr.Value}\"");
-                attributes = " " + string.Join(" ", attributeList);
-            }
-            string openingTag = $"<{TagName}{attributes}>";
-            string closingTag = ElementClosingType == ClosingType.Double ? $"</{TagName}>" : "";
-            return openingTag + InnerHTML + closingTag;
-        }
-    }
-
-    public override string InnerHTML
-    {
-        get => string.Join("", Children.Select(child => child.OuterHTML));
-    }
-
+    public override void Accept(INodeVisitor visitor) => visitor.Visit(this);
     public int ChildCount => Children.Count;
 
     public void AddChild(LightNode child)
