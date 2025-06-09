@@ -17,7 +17,7 @@ public enum ClosingType
     Double
 }
 
-public class LightElementNode : LightNode
+public class LightElementNode : LightNodeWithLifecycle
 {
     public string TagName { get; set; }
     public DisplayType ElementDisplayType { get; set; } = DisplayType.Block;
@@ -39,4 +39,17 @@ public class LightElementNode : LightNode
     {
         Children.Add(child);
     }
+
+    protected override void OnCreated(TextWriter logger) { logger.WriteLine($"{TagName} created"); }
+    protected override void OnInserted(TextWriter logger) { logger.WriteLine($"{TagName} inserted"); }
+
+    protected override void OnClassListApplied(TextWriter logger)
+    {
+        var classList = string.Join(" ", Attributes.Where(attr => attr.Key == "class").Select(attr => attr.Value));
+        logger.WriteLine($"Class list applied to {TagName}: {classList}");
+    }
+
+    protected override void OnStylesApplied(TextWriter logger) { logger.WriteLine($"Styles applied to {TagName}"); }
+    protected override void OnTextRendered(TextWriter logger) { logger.WriteLine($"{TagName} rendered"); }
+    protected override void OnRemoved(TextWriter logger) { logger.WriteLine($"{TagName} removed"); }
 }

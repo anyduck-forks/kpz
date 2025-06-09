@@ -132,6 +132,42 @@ public class LightHTMLTests
         Assert.False(sizeRadio2.IsChecked);
     }
 
+    [Fact]
+    public void LightTextNode_Render()
+    {
+        var textNode = new LightTextNode("Hello World");
+        var output = new StringWriter();
+
+        textNode.Render(output);
+        var result = output.ToString();
+        var lines = result.Split(output.NewLine, StringSplitOptions.RemoveEmptyEntries);
+
+        Assert.Equal("TextNode created: Hello World", lines[0]);
+        Assert.Equal("TextNode inserted: Hello World", lines[1]);
+        Assert.Equal("Styles applied to TextNode: Hello World", lines[2]);
+        Assert.Equal("TextNode rendered: Hello World", lines[3]);
+        Assert.Equal("TextNode removed: Hello World", lines[4]);
+    }
+
+    [Fact]
+    public void LightElementNode_Render()
+    {
+        var element = new LightElementNode("button");
+        element.Attributes["class"] = "btn btn-primary";
+        var output = new StringWriter();
+
+        element.Render(output);
+        var result = output.ToString();
+        var lines = result.Split(output.NewLine, StringSplitOptions.RemoveEmptyEntries);
+        
+        Assert.Equal("button created", lines[0]);
+        Assert.Equal("button inserted", lines[1]);
+        Assert.Equal("Class list applied to button: btn btn-primary", lines[2]);
+        Assert.Equal("Styles applied to button", lines[3]);
+        Assert.Equal("button rendered", lines[4]);
+        Assert.Equal("button removed", lines[5]);
+    }
+
     private LightElementNode CreateSampleHTML()
     {
         var ul = new LightElementNode("ul", DisplayType.Block, ClosingType.Double);
